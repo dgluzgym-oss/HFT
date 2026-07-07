@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NFT Calculator</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #1c1c1c; color: white; text-align: center; }
+        .item { background: #333; padding: 10px; margin: 5px 0; border-radius: 8px; }
+        #total { font-size: 24px; font-weight: bold; margin-top: 20px; color: #ffce00; }
+    </style>
+</head>
+<body>
+    <h3>Мої NFT</h3>
+    <div id="list">Завантаження...</div>
+    <div id="total"></div>
+
+    <script>
+        const prices = {
+            "Mood Pack (Emo Phase)": 180, "Holiday Drink (Emo Drip)": 200, "Snoop Dogg (Fish Hat)": 210,
+            "Swiss Watch (Sean Connery)": 3960, "Astral Shard (Nouveau Gold)": 8690, "Mighty Arm (Gold Dragon)": 10150
+        };
+        
+        let total = 0;
+        const listDiv = document.getElementById('list');
+        listDiv.innerHTML = "";
+        
+        Object.entries(prices).forEach(([item, price]) => {
+            total += price;
+            listDiv.innerHTML += `<div class="item">${item} — ${price}₴</div>`;
+        });
+        document.getElementById('total').innerText = `Разом: ${total}₴`;
+    </script>
+</body>
+</html>
