@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NFT Dashboard</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 15px; background: #1c1c1c; color: white; }
+        .item { background: #333; padding: 10px; margin: 6px 0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .info { font-size: 14px; }
+        button { padding: 6px 10px; border: none; border-radius: 5px; background: #ffce00; font-weight: bold; cursor: pointer; }
+        #total { font-size: 20px; text-align: center; margin: 20px 0; color: #ffce00; font-weight: bold; position: sticky; top: 0; background: #1c1c1c; padding: 10px; }
+    </style>
+</head>
+<body>
+    <div id="total">Разом: 0₴</div>
+    <div id="list"></div>
+
+    <script>
+        const nfts = [
+            { name: "Mood Pack (Emo Phase)", price: 180 }, { name: "Holiday Drink (Emo Drip)", price: 200 },
+            { name: "Swag Bag (Crook To Cook)", price: 200 }, { name: "Snoop Dogg (Fish Hat)", price: 210 },
+            { name: "Snoop Dogg (Long Beach)", price: 210 }, { name: "Snoop Dogg (Bow Wizzle)", price: 210 },
+            { name: "Snoop Dogg (Barks A Locks)", price: 210 }, { name: "Snoop Dogg (Bollywood)", price: 210 },
+            { name: "Snoop Dogg (Barks Lightyear)", price: 210 }, { name: "Snoop Dogg (Chow Wow)", price: 210 },
+            { name: "Snoop Dogg (Purple Hoodie)", price: 210 }, { name: "Snoop Dogg (Super Bowl)", price: 210 },
+            { name: "Swag Bag (Platinum Drip)", price: 210 }, { name: "Surge Board (Drakkar)", price: 310 },
+            { name: "Clover Pin (Emo Pin)", price: 330 }, { name: "Bow Tie (Heritage)", price: 340 },
+            { name: "Snoop Cigar (Mirage)", price: 530 }, { name: "Snoop Cigar (Eurotrip)", price: 570 },
+            { name: "Witch Hat (Sorting Cat)", price: 680 }, { name: "Candy Cane (Designer)", price: 700 },
+            { name: "Low Rider (Silver Angel)", price: 2190 }, { name: "Swiss Watch (Sean Connery)", price: 3960 },
+            { name: "Astral Shard (Nouveau Gold)", price: 8690 }, { name: "Mighty Arm (Gold Dragon)", price: 10150 },
+            { name: "Lunar Snake (Amethyssst)", price: 120 }, { name: "Whip Cupcake (Stardust)", price: 130 },
+            { name: "Whip Cupcake (Tarot Cards)", price: 150 }, { name: "Lol Pop (Shock Wave)", price: 150 },
+            { name: "Lol Pop (Plastic Ice)", price: 170 }, { name: "Swag Bag (Dogg Treats)", price: 200 },
+            { name: "Snoop Dogg (Shower Cap)", price: 200 }, { name: "Swag Bag (Choco Doggs)", price: 210 },
+            { name: "Restless Jar (Cold Mint)", price: 220 }, { name: "Pet Snake (Dobby)", price: 230 },
+            { name: "Witch Hat (Color Spray)", price: 230 }, { name: "Snoop Dogg (Black Diamond)", price: 310 },
+            { name: "Light Sword (Stargazer)", price: 420 }, { name: "Spy Agaric (Cloudy Night)", price: 470 },
+            { name: "Snoop Cigar (Vinyl Vibes)", price: 530 }, { name: "Snoop Cigar (Smoke Sway)", price: 660 },
+            { name: "Snoop Cigar (Royalty)", price: 670 }, { name: "Snoop Cigar (Doggystyle)", price: 1510 },
+            { name: "Low Rider (DeVille 1968)", price: 2070 }, { name: "Ice Cream (Cyclone)", price: 120 },
+            { name: "Lunar Snake (Blizzard)", price: 120 }, { name: "Ice Cream (Fried Chicken)", price: 120 },
+            { name: "Ice Cream (Starship)", price: 120 }, { name: "Ice Cream (TNT Stick)", price: 120 },
+            { name: "Ice Cream (Trio Scoop)", price: 120 }, { name: "Ice Cream (Extra Spicy)", price: 120 },
+            { name: "Ice Cream (Watermelon)", price: 130 }, { name: "Ice Cream (Berry Split)", price: 130 },
+            { name: "Ice Cream (Vice Dream)", price: 130 }, { name: "Ice Cream (Whisker)", price: 130 },
+            { name: "Ice Cream (Starlit)", price: 130 }, { name: "Ice Cream (Funky Disco)", price: 130 },
+            { name: "Ice Cream (Cold Steel)", price: 130 }, { name: "Ice Cream (Crude Oil)", price: 140 },
+            { name: "Ice Cream (Ghost Biters)", price: 190 }, { name: "Ice Cream (Resistance)", price: 760 },
+            { name: "Ice Cream (Ice Craft)", price: 110 }, { name: "Lunar Snake (Stone Python)", price: 120 },
+            { name: "Lunar Snake (Cherry Glitch)", price: 120 }, { name: "Lunar Snake (Blood Adder)", price: 130 },
+            { name: "Lunar Snake (Golden Coal)", price: 130 }, { name: "Lunar Snake (Gold Rush)", price: 130 },
+            { name: "Lunar Snake (Diamondback)", price: 140 }, { name: "Lunar Snake (Mandarin)", price: 140 },
+            { name: "Liberty Figure (Girl Scout)", price: 150 }, { name: "Fresh Socks (Trader)", price: 180 },
+            { name: "Restless Jar (Tricky Treats)", price: 190 }, { name: "Easter Egg (Choco Bunny)", price: 270 },
+            { name: "Sleigh Bell (Raspberry)", price: 290 }, { name: "Party Sparkler (Golden Gun)", price: 310 },
+            { name: "Hanging Star (Red Costume)", price: 310 }, { name: "Snow Mittens (Static Shock)", price: 420 },
+            { name: "Evil Eye (Tesla Coil)", price: 440 }, { name: "Sakura Flower (Venus Flytrap)", price: 680 },
+            { name: "Tama Gadget (Doom)", price: 770 }, { name: "Eternal Rose (Cobalt Magic)", price: 1130 },
+            { name: "Toy Bear (The Devil)", price: 2190 }, { name: "Signet Ring (Nyan Cat)", price: 2450 },
+            { name: "Toy Bear (Ursa Major)", price: 4480 }, { name: "Vice Cream (Mega Scoop)", price: 120 },
+            { name: "Vice Cream (Scoopzilla)", price: 120 }, { name: "Chill Flame (Prometheus)", price: 120 },
+            { name: "Chill Flame (Lego)", price: 120 }, { name: "Chill Flame (Lava Lamp)", price: 120 },
+            { name: "Vice Cream (Viceroy)", price: 120 }, { name: "Vice Cream (Porcelain)", price: 120 },
+            { name: "Chill Flame (Victory)", price: 120 }, { name: "Vice Cream (Champion Cup)", price: 120 },
+            { name: "Lol Pop (Gold Star)", price: 140 }, { name: "Pool Float (Golden Cobra)", price: 140 },
+            { name: "Mood Pack (Street Art)", price: 140 }, { name: "Easter Egg (Crown Prince)", price: 150 },
+            { name: "Victory Medal (Radiant Order)", price: 200 }, { name: "Victory Medal (Heroic Honor)", price: 200 },
+            { name: "Snoop Dogg (Chill Homie)", price: 200 }, { name: "B-Day Candle (Steel Strong)", price: 200 },
+            { name: "Eternal Candle (My Precious)", price: 220 }, { name: "Snow Globe (Midas Manor)", price: 360 },
+            { name: "Desk Calendar (Helios)", price: 360 }, { name: "Cupid Charm (Starlight)", price: 980 },
+            { name: "Eternal Rose (Golden Shine)", price: 1160 }, { name: "Desk Calendar (Investor)", price: 1490 },
+            { name: "Desk Calendar (April Fools)", price: 200 }, { name: "Desk Calendar (Mesozoic)", price: 210 },
+            { name: "Desk Calendar (Orchestra)", price: 240 }, { name: "Desk Calendar (Vacation)", price: 240 },
+            { name: "Desk Calendar (Launch Date)", price: 250 }, { name: "Desk Calendar (Toy Calendar)", price: 260 },
+            { name: "Desk Calendar (Cyberpunk)", price: 270 }, { name: "Desk Calendar (Vintage)", price: 280 },
+            { name: "Desk Calendar (Anniversary)", price: 280 }, { name: "Desk Calendar (Weekly Set)", price: 330 },
+            { name: "Desk Calendar (First Date)", price: 460 }, { name: "Desk Calendar (Sol Invictus)", price: 570 },
+            { name: "Desk Calendar (Selena)", price: 570 }, { name: "Desk Calendar (Shuffle)", price: 620 },
+            { name: "Desk Calendar (Frjádagr)", price: 1580 }, { name: "Desk Calendar (Day of Mars)", price: 1750 },
+            { name: "Easter Egg (Faberge)", price: 4540 }, { name: "Desk Calendar (New Year)", price: 220 },
+            { name: "Jingle Bells (Flashlights)", price: 310 }, { name: "Jingle Bells (Candy Houses)", price: 330 },
+            { name: "Jingle Bells (Reindeer)", price: 340 }, { name: "Desk Calendar (Artwork)", price: 390 },
+            { name: "Jingle Bells (Royal Hour)", price: 390 }, { name: "Jingle Bells (Peonies)", price: 420 },
+            { name: "Jingle Bells (Crystal)", price: 470 }, { name: "Desk Calendar (Cat Seasons)", price: 470 },
+            { name: "Jingle Bells (Festive Duo)", price: 540 }, { name: "Jingle Bells (Bullfinch)", price: 620 },
+            { name: "Jingle Bells (Wind Chimes)", price: 650 }, { name: "Jingle Bells (Ice Queen)", price: 680 },
+            { name: "Jingle Bells (Nutcracker)", price: 810 }, { name: "Jingle Bells (Grinch)", price: 880 },
+            { name: "Desk Calendar (Outlaw)", price: 910 }, { name: "Money Pot (Porridge)", price: 170 },
+            { name: "Cookie Heart (Black Heart)", price: 190 }, { name: "Desk Calendar (Time Spin)", price: 210 },
+            { name: "Desk Calendar (Steampunk)", price: 220 }, { name: "Desk Calendar (Anno Domini)", price: 300 },
+            { name: "Spring Basket (Eggsclusive)", price: 310 }, { name: "Desk Calendar (Zeus)", price: 320 },
+            { name: "Jingle Bells (Santa Claus)", price: 460 }, { name: "Jingle Bells (Purple Jingle)", price: 500 },
+            { name: "Jingle Bells (Blue Sapphire)", price: 510 }, { name: "Jingle Bells (Pink Bow)", price: 520 },
+            { name: "Jingle Bells (Noble Pearl)", price: 520 }, { name: "Desk Calendar (Wedding)", price: 570 },
+            { name: "Jingle Bells (Pharaoh)", price: 730 }, { name: "Desk Calendar (Shinto Shrine)", price: 2500 },
+            { name: "Jingle Bells (Hot Cherry)", price: 10670 }, { name: "Pool Float (Bald Eagle)", price: 110 },
+            { name: "Pool Float (Unicorn)", price: 120 }, { name: "Chill Flame (Eternal Flame)", price: 120 },
+            { name: "Xmas Stocking (Tangerine)", price: 120 }, { name: "Snake Box (Bluebell)", price: 120 },
+            { name: "Chill Flame (Paper Lantern)", price: 120 }, { name: "Snake Box (Secret Santa)", price: 120 },
+            { name: "Chill Flame (Olympia)", price: 120 }, { name: "Whip Cupcake (Rising Dead)", price: 120 },
+            { name: "Lunar Snake (Kinder Garter)", price: 130 }, { name: "Xmas Stocking (Arctic)", price: 130 },
+            { name: "Whip Cupcake (Cherry Top)", price: 130 }, { name: "Big Year (Industrial)", price: 130 },
+            { name: "Candy Cane (Lazy Nap)", price: 130 }, { name: "Instant Ramen (Black Pasta)", price: 130 },
+            { name: "Instant Ramen (Abduction)", price: 130 }, { name: "Ice Cream (Cucumber)", price: 130 },
+            { name: "Holiday Drink (Marigold)", price: 130 }, { name: "Snake Box (Fragile)", price: 150 },
+            { name: "Jester Hat (Dagonet)", price: 150 }, { name: "Happy Brownie (Captain Flush)", price: 170 },
+            { name: "Snow Globe (Amethyst)", price: 180 }, { name: "Party Sparkler (Iridescent)", price: 180 },
+            { name: "Swiss Watch (Gameboy)", price: 1880 }, { name: "Swiss Watch (Pip-Boy)", price: 1880 },
+            { name: "Vice Cream (Vanilla Brick)", price: 120 }, { name: "Chill Flame (Los Angeles)", price: 120 },
+            { name: "Vice Cream (Mermaid)", price: 120 }, { name: "Chill Flame (Tiki Torch)", price: 120 },
+            { name: "Snake Box (Seashore)", price: 120 }, { name: "Vice Cream (Vanilla)", price: 120 },
+            { name: "Candy Cane (Cherry Charm)", price: 120 }, { name: "Instant Ramen (Jelly Brain)", price: 140 },
+            { name: "Vice Cream (Love Glazed)", price: 160 }, { name: "Happy Brownie (Deadpoo)", price: 170 },
+            { name: "Vice Cream (Tralashark)", price: 180 }, { name: "Homemade Cake (Сitrus Matcha)", price: 180 },
+            { name: "Clover Pin (Hot Brand)", price: 190 }, { name: "Homemade Cake (Golden Hour)", price: 190 },
+            { name: "Witch Hat (Guava)", price: 200 }, { name: "Input Key (LOL)", price: 230 },
+            { name: "Input Key (Hot Grill)", price: 240 }, { name: "Top Hat (Alabaster)", price: 430 },
+            { name: "Ice Cream (Golden Drake)", price: 490 }, { name: "Snoop Cigar (Hot Rod)", price: 530 },
+            { name: "Neko Helmet (Chrome)", price: 1720 }, { name: "Lunar Snake (Purple Cap)", price: 120 },
+            { name: "Chill Flame (Medieval)", price: 120 }, { name: "Whip Cupcake (First Bite)", price: 120 },
+            { name: "Snake Box (Pink Bloom)", price: 120 }, { name: "Lunar Snake (Super Hot)", price: 120 },
+            { name: "Xmas Stocking (Frozen Moss)", price: 120 }, { name: "Whip Cupcake (Ogre Snack)", price: 130 },
+            { name: "Winter Wreath (Sunny Bunny)", price: 130 }, { name: "Instant Ramen (Mushroom)", price: 130 },
+            { name: "Instant Ramen (Cat Food)", price: 130 }, { name: "Mood Pack (Fire Show)", price: 150 },
+            { name: "Mood Pack (Golden Dragon)", price: 160 }, { name: "Clover Pin (Orange Juice)", price: 180 },
+            { name: "Swag Bag (Doggystyle)", price: 190 }, { name: "Eternal Candle (Gold Stars)", price: 220 },
+            { name: "Eternal Candle (White Ash)", price: 230 }, { name: "Input Key (Hashtag)", price: 230 },
+            { name: "Top Hat (Cranberry)", price: 440 }, { name: "Love Potion (Peach Nectar)", price: 550 },
+            { name: "Toy Bear (Pajamas)", price: 1530 }, { name: "Whip Cupcake (Arizona)", price: 120 },
+            { name: "Mood Pack (Travel Duck)", price: 140 }, { name: "Pet Snake (Pure Gold)", price: 150 },
+            { name: "Victory Medal (Golden Puck)", price: 160 }, { name: "Timeless Book (Voodoo)", price: 170 },
+            { name: "Pool Float (Going Merry)", price: 170 }, { name: "Stellar Rocket (Rocket Plush)", price: 170 },
+            { name: "Victory Medal (Telecrafter)", price: 180 }, { name: "Spring Basket (Red Panda)", price: 180 },
+            { name: "Mood Pack (Infernal Goat)", price: 190 }, { name: "Input Key (Doomsday)", price: 260 },
+            { name: "Jolly Chimp (Caveman)", price: 280 }, { name: "Jolly Chimp (Snow Yeti)", price: 320 },
+            { name: "Bling Binky (Christmas)", price: 960 }, { name: "Whip Cupcake (Spiritwood)", price: 100 },
+            { name: "Lunar Snake (Saffron)", price: 110 }, { name: "Pool Float (Slick Track)", price: 120 },
+            { name: "Mood Pack (Star Pupil)", price: 120 }, { name: "Ice Cream (Crystal)", price: 140 },
+            { name: "Spy Agaric (Fungal Dew)", price: 170 }, { name: "Evil Eye (Do Not Disturb)", price: 260 }
+        ];
+        
+        let total = 0;
+        const listDiv = document.getElementById('list');
+        
+        nfts.forEach(nft => {
+            total += nft.price;
+            listDiv.innerHTML += `
+                <div class="item">
+                    <div class="info">${nft.name} <br> <b>${nft.price}₴</b></div>
+                    <button onclick="Telegram.WebApp.openTelegramLink('https://t.me/kspy3?text=Хочу+продати+${encodeURIComponent(nft.name)}')">Продати</button>
+                </div>`;
+        });
+        document.getElementById('total').innerText = `Разом: ${total}₴`;
+    </script>
+</body>
+</html>
